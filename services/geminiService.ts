@@ -6,7 +6,7 @@ const getClient = () => {
   if (client) return client; // Return cached instance
 
   // Use the correct environment variable name
-  const apiKey = import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = import.meta.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.error("GEMINI_API_KEY is not set. Please configure it in your environment.");
     // For development/demo purposes, return a client with placeholder functionality
@@ -172,7 +172,7 @@ export const generateVeoVideo = async (prompt: string, aspectRatio: string): Pro
   if (!videoUri) throw new Error("Video generation failed or returned no URI.");
 
   // Fetch the actual video bytes using the API key
-  const apiKey = import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = import.meta.env.GEMINI_API_KEY;
   const response = await fetch(`${videoUri}&key=${apiKey}`);
   if (!response.ok) throw new Error("Failed to download video.");
   
