@@ -6,7 +6,7 @@ const getClient = () => {
   if (client) return client; // Return cached instance
 
   // Use the correct environment variable name
-  const apiKey = import.meta.env.GEMINI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
     console.error("GEMINI_API_KEY is not set. Please configure it in your environment.");
     // For development/demo purposes, return a client with placeholder functionality
@@ -53,7 +53,7 @@ export const createChat = () => {
     console.error("API key not configured. This feature requires a valid Gemini API key.");
     // Return a mock chat object that can handle the API calls gracefully
     return {
-      sendMessage: async ({ message }: { message: string }) => {
+      sendMessage: async (message: string) => {
         return {
           text: "API key not configured. This feature requires a valid Gemini API key."
         };
@@ -61,7 +61,7 @@ export const createChat = () => {
     };
   }
   return ai.chats.create({
-    model: 'gemini-3-pro-preview',
+    model: 'gemini-2.5-flash',
     config: {
       systemInstruction: "You are Nate, a cheerful, empathetic, and supportive companion in the App4QT app. Your goal is to bring joy and self-care advice.",
     }
@@ -172,7 +172,7 @@ export const generateVeoVideo = async (prompt: string, aspectRatio: string): Pro
   if (!videoUri) throw new Error("Video generation failed or returned no URI.");
 
   // Fetch the actual video bytes using the API key
-  const apiKey = import.meta.env.GEMINI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const response = await fetch(`${videoUri}&key=${apiKey}`);
   if (!response.ok) throw new Error("Failed to download video.");
   

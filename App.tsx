@@ -286,14 +286,7 @@ const ChatBuddySection = () => {
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [loading, setLoading] = useState(false);
-  const chatRef = useRef<Chat | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!chatRef.current) {
-      chatRef.current = Gemini.createChat();
-    }
-  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -304,6 +297,7 @@ const ChatBuddySection = () => {
     
     const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', text: input };
     setMessages(prev => [...prev, userMsg]);
+    const currentInput = input;
     setInput("");
     setLoading(true);
     Sounds.click();
@@ -312,12 +306,9 @@ const ChatBuddySection = () => {
       let responseText = "";
       
       if (isThinking) {
-        // Use Thinking Model for complex query
-        responseText = await Gemini.generateThinkingText(input);
+        responseText = await Gemini.generateThinkingText(currentInput);
       } else {
-        // Standard Chat
-        const result: GenerateContentResponse = await chatRef.current!.sendMessage({ message: input });
-        responseText = result.text || "";
+        responseText = await Gemini.generateFastText(`You are Nate, a cheerful companion. Respond to: ${currentInput}`);
       }
 
       const modelMsg: ChatMessage = { 
