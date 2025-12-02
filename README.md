@@ -2,6 +2,9 @@
 
 This is a React application built with Vite and TypeScript, deployed on Vercel.
 
+## Status
+test something message
+
 ## Deployed on Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/your-repo-name)
