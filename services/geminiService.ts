@@ -1,6 +1,10 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const getClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getClient = () => {
+  // Use the correct environment variable name
+  const apiKey = import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  return new GoogleGenAI({ apiKey });
+};
 
 // 1. Fast AI Responses (Flash Lite)
 export const generateFastText = async (prompt: string): Promise<string> => {
@@ -132,7 +136,8 @@ export const generateVeoVideo = async (prompt: string, aspectRatio: string): Pro
   if (!videoUri) throw new Error("Video generation failed or returned no URI.");
 
   // Fetch the actual video bytes using the API key
-  const response = await fetch(`${videoUri}&key=${process.env.API_KEY}`);
+  const apiKey = import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  const response = await fetch(`${videoUri}&key=${apiKey}`);
   if (!response.ok) throw new Error("Failed to download video.");
   
   const blob = await response.blob();
