@@ -4,6 +4,7 @@ This is a React application built with Vite and TypeScript, deployed on Vercel.
 
 ## Status
 test something message
+Deployment triggered: December 2, 2025
 
 ## Deployed on Netlify
 
