@@ -1,14 +1,28 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
+let client: GoogleGenAI | null = null;
+
 const getClient = () => {
+  if (client) return client; // Return cached instance
+
   // Use the correct environment variable name
   const apiKey = import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-  return new GoogleGenAI({ apiKey });
+  if (!apiKey) {
+    console.error("GEMINI_API_KEY is not set. Please configure it in your environment.");
+    // For development/demo purposes, return a client with placeholder functionality
+    // In a real app, you'd want to handle this differently
+    return null;
+  }
+  client = new GoogleGenAI({ apiKey });
+  return client;
 };
 
 // 1. Fast AI Responses (Flash Lite)
 export const generateFastText = async (prompt: string): Promise<string> => {
   const ai = getClient();
+  if (!ai) {
+    return "API key not configured. This feature requires a valid Gemini API key.";
+  }
   const response = await ai.models.generateContent({
     model: 'gemini-flash-lite-latest',
     contents: prompt,
@@ -19,6 +33,9 @@ export const generateFastText = async (prompt: string): Promise<string> => {
 // 2. Thinking Mode (Pro Preview + Budget)
 export const generateThinkingText = async (prompt: string): Promise<string> => {
   const ai = getClient();
+  if (!ai) {
+    return "API key not configured. This feature requires a valid Gemini API key.";
+  }
   const response = await ai.models.generateContent({
     model: 'gemini-3-pro-preview',
     contents: prompt,
@@ -32,6 +49,17 @@ export const generateThinkingText = async (prompt: string): Promise<string> => {
 // 3. Chat (Pro Preview)
 export const createChat = () => {
   const ai = getClient();
+  if (!ai) {
+    console.error("API key not configured. This feature requires a valid Gemini API key.");
+    // Return a mock chat object that can handle the API calls gracefully
+    return {
+      sendMessage: async ({ message }: { message: string }) => {
+        return {
+          text: "API key not configured. This feature requires a valid Gemini API key."
+        };
+      }
+    };
+  }
   return ai.chats.create({
     model: 'gemini-3-pro-preview',
     config: {
@@ -43,6 +71,11 @@ export const createChat = () => {
 // 4. Generate Speech (TTS)
 export const generateSpeech = async (text: string): Promise<ArrayBuffer> => {
   const ai = getClient();
+  if (!ai) {
+    console.error("API key not configured. This feature requires a valid Gemini API key.");
+    // Return an empty buffer or throw a more graceful error
+    return new ArrayBuffer(0);
+  }
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash-preview-tts',
     contents: [{ parts: [{ text }] }],
@@ -58,7 +91,7 @@ export const generateSpeech = async (text: string): Promise<ArrayBuffer> => {
 
   const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
   if (!base64Audio) throw new Error("No audio data returned");
-  
+
   // Basic decode function
   const binaryString = atob(base64Audio);
   const len = binaryString.length;
@@ -72,6 +105,9 @@ export const generateSpeech = async (text: string): Promise<ArrayBuffer> => {
 // 5. Mood Pal (Gemini Flash)
 export const generateMoodMessage = async (mood: string): Promise<string> => {
   const ai = getClient();
+  if (!ai) {
+    return "API key not configured. This feature requires a valid Gemini API key.";
+  }
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
     contents: `I am feeling ${mood} today. Write a short, heartwarming, cute, and supportive message for me. Include emojis to make it cheerful.`,
